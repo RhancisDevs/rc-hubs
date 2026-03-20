@@ -50,8 +50,12 @@ local function LoadKey()
         local success, result = pcall(function()
             return HttpService:JSONDecode(readfile(KEY_FILE))
         end)
-        if success and result and result.key then
+
+        if success and type(result) == "table" and result.key then
             return result.key
+        else
+            warn("Corrupted key file, deleting...")
+            DeleteKey()
         end
     end
     return nil
@@ -69,7 +73,29 @@ local function Panda_V4_GetKey()
 end
 
 local function Panda_V4_Validate(Keys)
-    return PandaV4Lite.validate(Keys).success
+    local success, result = pcall(function()
+        return PandaV4Lite.validate(Keys)
+    end)
+
+    if not success or type(result) ~= "table" then
+        warn("Validation failed or invalid response:", result)
+        return false
+    end
+
+    return result.success == true
+end
+
+local function Panda_V4_Validate_Premium(Keys)
+    local success, result = pcall(function()
+        return PandaV4Lite.validate(Keys)
+    end)
+
+    if not success or type(result) ~= "table" then
+        warn("Premium validation failed:", result)
+        return false
+    end
+
+    return result.success == true and result.isPremium == true
 end
 
 local function Panda_V4_Validate_Premium(Keys)
