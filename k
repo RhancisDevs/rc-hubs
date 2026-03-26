@@ -875,84 +875,6 @@ function RcHub:Window(GuiConfig)
             end
         end
     end)
-
-    function GuiFunc:SetConfig(Tab)
-    local CurrentConfigName = "default"
-    local DropdownRef
-
-    local function GetConfigs()
-        local list = {}
-        if isfolder("Rc Hub/Config") then
-            for _, file in pairs(listfiles("Rc Hub/Config")) do
-                local name = file:match("([^/\\]+)%.json$")
-                if name then
-                    table.insert(list, name)
-                end
-            end
-        end
-        return list
-    end
-
-    local function RefreshDropdown()
-        if DropdownRef and DropdownRef.Refresh then
-            DropdownRef:Refresh(GetConfigs(), true)
-        end
-    end
-
-    local section = Tab:AddSection("Config", true)
-
-    DropdownRef = section:AddDropdown({
-        Title = "Config List",
-        Values = GetConfigs(),
-        Callback = function(v)
-            CurrentConfigName = v
-        end
-    })
-
-    section:AddInput({
-        Title = "Config Name",
-        Default = "default",
-        Callback = function(v)
-            CurrentConfigName = v
-        end
-    })
-
-    section:AddButton({
-        Title = "Save Config",
-        Callback = function()
-            ConfigData._version = CURRENT_VERSION
-            writefile("Rc Hub/Config/" .. CurrentConfigName .. ".json", HttpService:JSONEncode(ConfigData))
-            rcchub("Saved config: " .. CurrentConfigName)
-            RefreshDropdown()
-        end
-    })
-
-    section:AddButton({
-        Title = "Load Config",
-        Callback = function()
-            local path = "Rc Hub/Config/" .. CurrentConfigName .. ".json"
-            if isfile(path) then
-                local data = HttpService:JSONDecode(readfile(path))
-                if data then
-                    ConfigData = data
-                    LoadConfigElements()
-                    rcchub("Loaded config: " .. CurrentConfigName)
-                end
-            end
-        end
-    })
-
-    section:AddButton({
-        Title = "Delete Config",
-        Callback = function()
-            local path = "Rc Hub/Config/" .. CurrentConfigName .. ".json"
-            if isfile(path) then
-                delfile(path)
-                rcchub("Deleted config: " .. CurrentConfigName)
-                RefreshDropdown()
-            end
-        end
-    }) end
   
     function GuiFunc:ToggleUI()
         local ScreenGui = Instance.new("ScreenGui")
@@ -2781,8 +2703,86 @@ function RcHub:Window(GuiConfig)
         _G[safeName] = Sections
         return Sections
     end
+    
+    function GuiFunc:SetConfig(Tab)
+    local CurrentConfigName = "default"
+    local DropdownRef
 
-    return Tabs
+    local function GetConfigs()
+        local list = {}
+        if isfolder("Rc Hub/Config") then
+            for _, file in pairs(listfiles("Rc Hub/Config")) do
+                local name = file:match("([^/\\]+)%.json$")
+                if name then
+                    table.insert(list, name)
+                end
+            end
+        end
+        return list
+    end
+
+    local function RefreshDropdown()
+        if DropdownRef and DropdownRef.Refresh then
+            DropdownRef:Refresh(GetConfigs(), true)
+        end
+    end
+
+    local section = Tab:AddSection("Config", true)
+
+    DropdownRef = section:AddDropdown({
+        Title = "Config List",
+        Values = GetConfigs(),
+        Callback = function(v)
+            CurrentConfigName = v
+        end
+    })
+
+    section:AddInput({
+        Title = "Config Name",
+        Default = "default",
+        Callback = function(v)
+            CurrentConfigName = v
+        end
+    })
+
+    section:AddButton({
+        Title = "Save Config",
+        Callback = function()
+            ConfigData._version = CURRENT_VERSION
+            writefile("Rc Hub/Config/" .. CurrentConfigName .. ".json", HttpService:JSONEncode(ConfigData))
+            rcchub("Saved config: " .. CurrentConfigName)
+            RefreshDropdown()
+        end
+    })
+
+    section:AddButton({
+        Title = "Load Config",
+        Callback = function()
+            local path = "Rc Hub/Config/" .. CurrentConfigName .. ".json"
+            if isfile(path) then
+                local data = HttpService:JSONDecode(readfile(path))
+                if data then
+                    ConfigData = data
+                    LoadConfigElements()
+                    rcchub("Loaded config: " .. CurrentConfigName)
+                end
+            end
+        end
+    })
+
+    section:AddButton({
+        Title = "Delete Config",
+        Callback = function()
+            local path = "Rc Hub/Config/" .. CurrentConfigName .. ".json"
+            if isfile(path) then
+                delfile(path)
+                rcchub("Deleted config: " .. CurrentConfigName)
+                RefreshDropdown()
+            end
+        end
+    }) end
+
+    return Tabs, GuiFunc
 end
 
 return RcHub
