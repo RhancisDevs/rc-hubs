@@ -2704,7 +2704,7 @@ function RcHub:Window(GuiConfig)
         return Sections
     end
     
-    function GuiFunc:SetConfig(Tab)
+    function Tabs:SetConfig(Tab)
     local CurrentConfigName = "default"
     local DropdownRef
 
@@ -2722,8 +2722,8 @@ function RcHub:Window(GuiConfig)
     end
 
     local function RefreshDropdown()
-        if DropdownRef and DropdownRef.Refresh then
-            DropdownRef:Refresh(GetConfigs(), true)
+        if DropdownRef then
+            DropdownRef:SetValues(GetConfigs(), CurrentConfigName)
         end
     end
 
@@ -2731,7 +2731,7 @@ function RcHub:Window(GuiConfig)
 
     DropdownRef = section:AddDropdown({
         Title = "Config List",
-        Values = GetConfigs(),
+        Options = GetConfigs(),
         Callback = function(v)
             CurrentConfigName = v
         end
@@ -2780,9 +2780,10 @@ function RcHub:Window(GuiConfig)
                 RefreshDropdown()
             end
         end
-    }) end
+    })
+    end
 
-    return Tabs, GuiFunc
+    return Tabs
 end
 
 return RcHub
