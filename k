@@ -876,71 +876,6 @@ function RcHub:Window(GuiConfig)
         end
     end)
 
-    function GuiFunc:ToggleUI()
-        local ScreenGui = Instance.new("ScreenGui")
-        ScreenGui.Parent = game:GetService("CoreGui")
-        ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-        ScreenGui.Name = "ToggleUIButton"
-
-        local MainButton = Instance.new("ImageLabel")
-        MainButton.Parent = ScreenGui
-        MainButton.Size = UDim2.new(0, 40, 0, 40)
-        MainButton.Position = UDim2.new(0, 20, 0, 100)
-        MainButton.BackgroundTransparency = 1
-        MainButton.Image = "rbxassetid://" .. GuiConfig.Image
-        MainButton.ScaleType = Enum.ScaleType.Fit
-
-        local UICorner = Instance.new("UICorner")
-        UICorner.CornerRadius = UDim.new(0, 6)
-        UICorner.Parent = MainButton
-
-        local Button = Instance.new("TextButton")
-        Button.Parent = MainButton
-        Button.Size = UDim2.new(1, 0, 1, 0)
-        Button.BackgroundTransparency = 1
-        Button.Text = ""
-
-        Button.MouseButton1Click:Connect(function()
-            if DropShadowHolder then
-                DropShadowHolder.Visible = not DropShadowHolder.Visible
-            end
-        end)
-
-        local dragging = false
-        local dragStart, startPos
-
-        local function update(input)
-            local delta = input.Position - dragStart
-            MainButton.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-
-        Button.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = input.Position
-                startPos = MainButton.Position
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragging = false
-                    end
-                end)
-            end
-        end)
-
-        game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                update(input)
-            end
-        end)
-    end
-
-    GuiFunc:ToggleUI()
-
     function GuiFunc:SetConfig(Tab)
     local CurrentConfigName = "default"
     local DropdownRef
@@ -1018,6 +953,71 @@ function RcHub:Window(GuiConfig)
             end
         end
     }) end
+  
+    function GuiFunc:ToggleUI()
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Parent = game:GetService("CoreGui")
+        ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        ScreenGui.Name = "ToggleUIButton"
+
+        local MainButton = Instance.new("ImageLabel")
+        MainButton.Parent = ScreenGui
+        MainButton.Size = UDim2.new(0, 40, 0, 40)
+        MainButton.Position = UDim2.new(0, 20, 0, 100)
+        MainButton.BackgroundTransparency = 1
+        MainButton.Image = "rbxassetid://" .. GuiConfig.Image
+        MainButton.ScaleType = Enum.ScaleType.Fit
+
+        local UICorner = Instance.new("UICorner")
+        UICorner.CornerRadius = UDim.new(0, 6)
+        UICorner.Parent = MainButton
+
+        local Button = Instance.new("TextButton")
+        Button.Parent = MainButton
+        Button.Size = UDim2.new(1, 0, 1, 0)
+        Button.BackgroundTransparency = 1
+        Button.Text = ""
+
+        Button.MouseButton1Click:Connect(function()
+            if DropShadowHolder then
+                DropShadowHolder.Visible = not DropShadowHolder.Visible
+            end
+        end)
+
+        local dragging = false
+        local dragStart, startPos
+
+        local function update(input)
+            local delta = input.Position - dragStart
+            MainButton.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+
+        Button.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = MainButton.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                update(input)
+            end
+        end)
+    end
+    
+    GuiFunc:ToggleUI()
 
     DropShadowHolder.Size = UDim2.new(0, 115 + TextLabel.TextBounds.X + 1 + TextLabel1.TextBounds.X, 0, 350)
     MakeDraggable(Top, DropShadowHolder)
